@@ -215,17 +215,17 @@
   <!-- ══ DASHBOARD ══ -->
   <section class="section active" id="sec-home">
     <div class="page-header">
-      <div class="greeting">Week 12 · 2025</div>
+      <div class="greeting" id="week-greeting">Loading…</div>
       <h1>Your <span>Vault</span></h1>
     </div>
-    <span class="week-badge"><span class="week-dot"></span>Active — 4 days left</span>
+    <span class="week-badge"><span class="week-dot"></span><span id="days-left-badge">Active</span></span>
 
     <!-- Money Ring Card -->
     <div class="vault-card">
       <div class="vault-top">
         <div>
           <div class="vault-label">Available Balance</div>
-          <div class="vault-amount"><sup>₹</sup><span id="balance-num">1,250</span></div>
+          <div class="vault-amount"><sup>₹</sup><span id="balance-num">0</span></div>
         </div>
         <div class="vault-ring-wrap">
           <svg viewBox="0 0 72 72" width="72" height="72">
@@ -235,7 +235,7 @@
               stroke-dashoffset="56.5"/>
           </svg>
           <div class="ring-label">
-            <span id="ring-pct">70%</span>
+            <span id="ring-pct">0%</span>
             <small>DONE</small>
           </div>
         </div>
@@ -243,19 +243,19 @@
       <div class="vault-stats">
         <div class="vault-stat">
           <div class="vault-stat-label">Deposited</div>
-          <div class="vault-stat-val gold">₹1,500</div>
+          <div class="vault-stat-val gold" id="stat-deposited">₹0</div>
         </div>
         <div class="vault-stat">
           <div class="vault-stat-label">Penalties</div>
-          <div class="vault-stat-val red">–₹250</div>
+          <div class="vault-stat-val red" id="stat-penalties">–₹0</div>
         </div>
         <div class="vault-stat">
           <div class="vault-stat-label">Habits Done</div>
-          <div class="vault-stat-val green">7/10</div>
+          <div class="vault-stat-val green" id="stat-habits">0/0</div>
         </div>
         <div class="vault-stat">
           <div class="vault-stat-label">Violations</div>
-          <div class="vault-stat-val red">5×</div>
+          <div class="vault-stat-val red" id="stat-violations">0×</div>
         </div>
       </div>
     </div>
@@ -263,38 +263,13 @@
     <!-- Today's Progress -->
     <div class="section-title">Today's Progress</div>
     <div class="progress-bar-wrap">
-      <div class="progress-text"><span>3 of 4 tasks done</span><span>75%</span></div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:75%"></div></div>
+      <div class="progress-text"><span id="home-progress-text">No habits yet</span><span id="home-progress-pct">0%</span></div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="home-progress-bar" style="width:0%"></div></div>
     </div>
 
     <!-- Quick habits preview -->
     <div class="section-title">Today's Habits <a onclick="switchTab('habits')">See all →</a></div>
-    <div class="habits-list">
-      <div class="habit-card done" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info">
-          <div class="habit-name">Morning workout</div>
-          <div class="habit-meta">Daily · 30 min</div>
-        </div>
-        <span class="habit-streak">🔥 12 days</span>
-      </div>
-      <div class="habit-card done" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info">
-          <div class="habit-name">Read 20 pages</div>
-          <div class="habit-meta">Daily · Evening</div>
-        </div>
-        <span class="habit-streak">🔥 7 days</span>
-      </div>
-      <div class="habit-card" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info">
-          <div class="habit-name">Meditate 10 min</div>
-          <div class="habit-meta">Daily · Morning</div>
-        </div>
-        <span class="habit-streak">3 days</span>
-      </div>
-    </div>
+    <div class="habits-list" id="home-habits-preview"><div class="empty-state"><div class="empty-icon">🌱</div>No habits yet — add one in the Habits tab</div></div>
   </section>
 
   <!-- ══ HABITS ══ -->
@@ -304,42 +279,11 @@
       <h1>Your <span>Habits</span></h1>
     </div>
     <div class="progress-bar-wrap" style="padding: 0 16px 0;">
-      <div class="progress-text"><span>7 of 10 completed</span><span style="color:var(--gold)">₹50 per miss</span></div>
-      <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:70%"></div></div>
+      <div class="progress-text"><span id="habits-progress-text">0 of 0 completed</span><span style="color:var(--gold)" id="habits-penalty-label">₹50 per miss</span></div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="habits-progress-bar" style="width:0%"></div></div>
     </div>
     <div style="height:16px"></div>
-    <div class="habits-list" id="habits-full-list">
-      <div class="habit-card done" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info"><div class="habit-name">Morning workout</div><div class="habit-meta">Daily · 30 min</div></div>
-        <span class="habit-streak">🔥 12 days</span>
-      </div>
-      <div class="habit-card done" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info"><div class="habit-name">Read 20 pages</div><div class="habit-meta">Daily · Evening</div></div>
-        <span class="habit-streak">🔥 7 days</span>
-      </div>
-      <div class="habit-card done" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info"><div class="habit-name">No social media before 10am</div><div class="habit-meta">Daily · Morning</div></div>
-        <span class="habit-streak">🔥 5 days</span>
-      </div>
-      <div class="habit-card" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info"><div class="habit-name">Meditate 10 min</div><div class="habit-meta">Daily · Morning</div></div>
-        <span class="habit-streak">3 days</span>
-      </div>
-      <div class="habit-card" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info"><div class="habit-name">Sleep by 11pm</div><div class="habit-meta">Daily · Night</div></div>
-        <span class="habit-streak">1 day</span>
-      </div>
-      <div class="habit-card done" onclick="toggleHabit(this)">
-        <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-        <div class="habit-info"><div class="habit-name">Drink 3L water</div><div class="habit-meta">Daily</div></div>
-        <span class="habit-streak">🔥 9 days</span>
-      </div>
-    </div>
+    <div class="habits-list" id="habits-full-list"><div class="empty-state"><div class="empty-icon">✅</div>Add your first habit below</div></div>
     <button class="add-chip" onclick="openAddHabit()">
       <svg viewBox="0 0 18 18"><line x1="9" y1="3" x2="9" y2="15"/><line x1="3" y1="9" x2="15" y2="9"/></svg>
       Add new habit
@@ -349,18 +293,18 @@
   <!-- ══ DEPOSIT ══ -->
   <section class="section" id="sec-deposit">
     <div class="page-header">
-      <div class="greeting">Week 12</div>
+      <div class="greeting" id="deposit-week-greeting">This Week</div>
       <h1>Your <span>Deposit</span></h1>
     </div>
 
     <!-- UPI / GPay Pay Card -->
     <div class="deposit-card">
       <div class="deposit-status-row">
-        <span class="status-pill paid">✓ Paid</span>
-        <span style="font-size:12px;color:var(--muted)">Mar 17 · via UPI</span>
+        <span class="status-pill pending" id="deposit-status-pill">Pending</span>
+        <span style="font-size:12px;color:var(--muted)" id="deposit-date-label">Not paid yet</span>
       </div>
       <div class="deposit-amount-row">
-        <div class="deposit-big"><span>₹</span><span id="deposit-display-amt">1,500</span></div>
+        <div class="deposit-big"><span>₹</span><span id="deposit-display-amt">500</span></div>
         <div class="deposit-note">Weekly<br/>commitment</div>
       </div>
 
@@ -373,7 +317,7 @@
       <!-- Withdraw / Request payout -->
       <button class="btn-secondary" onclick="requestWithdraw()" style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10M8 8l4 4 4-4"/><path d="M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-        Request Withdrawal (₹1,250)
+        Request Withdrawal (<span id="withdraw-display">₹0</span>)
       </button>
 
       <button class="btn-secondary" onclick="openChangeDeposit()">Change next week's amount</button>
@@ -395,19 +339,19 @@
     <div class="breakdown-card">
       <div class="breakdown-row">
         <span>Weekly deposit</span>
-        <span class="breakdown-val" style="color:var(--gold)">+ ₹1,500</span>
+        <span class="breakdown-val" style="color:var(--gold)" id="breakdown-deposit">+ ₹0</span>
       </div>
       <div class="breakdown-row">
-        <span>Site violations (5×)</span>
-        <span class="breakdown-val red">– ₹250</span>
+        <span id="breakdown-violations-label">Site violations (0×)</span>
+        <span class="breakdown-val red" id="breakdown-violations">– ₹0</span>
       </div>
       <div class="breakdown-row">
         <span>Incomplete habits (est.)</span>
-        <span class="breakdown-val red">– ₹0</span>
+        <span class="breakdown-val red" id="breakdown-habits">– ₹0</span>
       </div>
       <div class="breakdown-row total">
         <span>Estimated payout</span>
-        <span class="breakdown-val green">₹1,250</span>
+        <span class="breakdown-val green" id="breakdown-payout">₹0</span>
       </div>
     </div>
 
@@ -431,7 +375,7 @@
   <!-- ══ VIOLATIONS ══ -->
   <section class="section" id="sec-violations">
     <div class="page-header">
-      <div class="greeting">Week 12 · 5 blocks</div>
+      <div class="greeting" id="violations-greeting">This Week</div>
       <h1><span>Site</span> Blocks</h1>
     </div>
 
@@ -439,7 +383,7 @@
       <div class="vault-top" style="margin-bottom:0">
         <div>
           <div class="vault-label">Total Penalties This Week</div>
-          <div class="vault-amount" style="color:var(--red)"><sup>₹</sup>250</div>
+          <div class="vault-amount" style="color:var(--red)"><sup>₹</sup><span id="total-penalties-display">0</span></div>
         </div>
         <div style="text-align:right;">
           <div class="vault-label">Per Violation</div>
@@ -449,61 +393,7 @@
     </div>
 
     <div class="section-title">Blocked Attempts</div>
-
-    <div class="violation-item" style="animation-delay:.05s">
-      <div class="violation-icon">
-        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><line x1="4.5" y1="4.5" x2="15.5" y2="15.5"/></svg>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div class="violation-domain">xvideos.com</div>
-        <div class="violation-time">Today · 11:42 PM</div>
-      </div>
-      <div class="violation-penalty">–₹50</div>
-    </div>
-
-    <div class="violation-item" style="animation-delay:.1s">
-      <div class="violation-icon">
-        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><line x1="4.5" y1="4.5" x2="15.5" y2="15.5"/></svg>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div class="violation-domain">pornhub.com</div>
-        <div class="violation-time">Yesterday · 10:18 PM</div>
-      </div>
-      <div class="violation-penalty">–₹50</div>
-    </div>
-
-    <div class="violation-item" style="animation-delay:.15s">
-      <div class="violation-icon">
-        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><line x1="4.5" y1="4.5" x2="15.5" y2="15.5"/></svg>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div class="violation-domain">xhamster.com</div>
-        <div class="violation-time">Mon 18 · 2:05 AM</div>
-      </div>
-      <div class="violation-penalty">–₹50</div>
-    </div>
-
-    <div class="violation-item" style="animation-delay:.2s">
-      <div class="violation-icon">
-        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><line x1="4.5" y1="4.5" x2="15.5" y2="15.5"/></svg>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div class="violation-domain">redtube.com</div>
-        <div class="violation-time">Mon 18 · 12:54 AM</div>
-      </div>
-      <div class="violation-penalty">–₹50</div>
-    </div>
-
-    <div class="violation-item" style="animation-delay:.25s">
-      <div class="violation-icon">
-        <svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><line x1="4.5" y1="4.5" x2="15.5" y2="15.5"/></svg>
-      </div>
-      <div style="flex:1;min-width:0;">
-        <div class="violation-domain">xvideos.com</div>
-        <div class="violation-time">Sun 17 · 11:10 PM</div>
-      </div>
-      <div class="violation-penalty">–₹50</div>
-    </div>
+    <div id="violations-list"><div class="empty-state"><div class="empty-icon">🛡️</div>No violations this week — great work!</div></div>
 
     <div style="height:10px"></div>
     <div style="padding:0 16px;font-size:12px;color:var(--muted);line-height:1.6;background:var(--bg2);margin:0 16px;border-radius:var(--radius);padding:14px 16px;">
@@ -520,60 +410,13 @@
 
     <div class="section-title">Summary</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:0 16px 16px;">
-      <div class="vault-stat"><div class="vault-stat-label">Total Saved</div><div class="vault-stat-val green" style="font-size:15px;">₹4,800</div></div>
-      <div class="vault-stat"><div class="vault-stat-label">Paid Penalty</div><div class="vault-stat-val red" style="font-size:15px;">₹950</div></div>
-      <div class="vault-stat"><div class="vault-stat-label">Best Week</div><div class="vault-stat-val gold" style="font-size:15px;">Wk 9</div></div>
+      <div class="vault-stat"><div class="vault-stat-label">Total Saved</div><div class="vault-stat-val green" style="font-size:15px;" id="hist-total-saved">₹0</div></div>
+      <div class="vault-stat"><div class="vault-stat-label">Paid Penalty</div><div class="vault-stat-val red" style="font-size:15px;" id="hist-total-penalty">₹0</div></div>
+      <div class="vault-stat"><div class="vault-stat-label">Best Week</div><div class="vault-stat-val gold" style="font-size:15px;" id="hist-best-week">—</div></div>
     </div>
 
     <div class="section-title">Week Log</div>
-
-    <div class="history-card">
-      <div class="history-top">
-        <div class="history-week">Week 11 · Mar 10–16</div>
-        <span class="history-result win">Full payout</span>
-      </div>
-      <div class="history-stats">
-        <div class="h-stat"><div class="h-stat-val green">10/10</div><div class="h-stat-label">Habits</div></div>
-        <div class="h-stat"><div class="h-stat-val" style="color:var(--muted)">0</div><div class="h-stat-label">Violations</div></div>
-        <div class="h-stat"><div class="h-stat-val green">₹1,500</div><div class="h-stat-label">Paid out</div></div>
-      </div>
-    </div>
-
-    <div class="history-card" style="animation-delay:.05s">
-      <div class="history-top">
-        <div class="history-week">Week 10 · Mar 3–9</div>
-        <span class="history-result partial">Partial</span>
-      </div>
-      <div class="history-stats">
-        <div class="h-stat"><div class="h-stat-val" style="color:var(--gold)">8/10</div><div class="h-stat-label">Habits</div></div>
-        <div class="h-stat"><div class="h-stat-val red">3</div><div class="h-stat-label">Violations</div></div>
-        <div class="h-stat"><div class="h-stat-val" style="color:var(--gold)">₹1,250</div><div class="h-stat-label">Paid out</div></div>
-      </div>
-    </div>
-
-    <div class="history-card" style="animation-delay:.1s">
-      <div class="history-top">
-        <div class="history-week">Week 9 · Feb 24–Mar 2</div>
-        <span class="history-result win">Full payout</span>
-      </div>
-      <div class="history-stats">
-        <div class="h-stat"><div class="h-stat-val green">10/10</div><div class="h-stat-label">Habits</div></div>
-        <div class="h-stat"><div class="h-stat-val" style="color:var(--muted)">0</div><div class="h-stat-label">Violations</div></div>
-        <div class="h-stat"><div class="h-stat-val green">₹1,500</div><div class="h-stat-label">Paid out</div></div>
-      </div>
-    </div>
-
-    <div class="history-card" style="animation-delay:.15s">
-      <div class="history-top">
-        <div class="history-week">Week 8 · Feb 17–23</div>
-        <span class="history-result loss">Heavy penalty</span>
-      </div>
-      <div class="history-stats">
-        <div class="h-stat"><div class="h-stat-val red">5/10</div><div class="h-stat-label">Habits</div></div>
-        <div class="h-stat"><div class="h-stat-val red">8</div><div class="h-stat-label">Violations</div></div>
-        <div class="h-stat"><div class="h-stat-val red">₹550</div><div class="h-stat-label">Paid out</div></div>
-      </div>
-    </div>
+    <div id="history-list"><div class="empty-state"><div class="empty-icon">📊</div>No completed weeks yet</div></div>
   </section>
 
 </div><!-- /page-wrap -->
@@ -674,7 +517,7 @@ const Store = {
 const STATE = {
   depositAmount: parseInt(Store.get('vh_deposit', '1500')),
   upiId:         Store.get('vh_upi', ''),
-  recipientUpi:  'mukunddawange91-1@oksbi',   // ← YOUR UPI ID — change this before uploading
+  recipientUpi:  Store.get('vh_recipient_upi', ''),  // Loaded from settings
   recipientName: 'VaultHabit',
   withdrawAmt:   1250,
 };
@@ -699,6 +542,7 @@ function toggleHabit(card) {
   const isDone = card.classList.contains('done');
   showToast((isDone ? '✓ ' : '✗ ') + name + (isDone ? ' done!' : ' unchecked'), isDone ? 'green' : '');
   updateRing();
+  syncDashboard();
 }
 
 function updateRing() {
@@ -717,25 +561,37 @@ function updateRing() {
 // ── GPay / UPI PAYMENT ──
 function openGPay() {
   const amt = STATE.depositAmount;
-  const pa  = encodeURIComponent(STATE.recipientUpi);
+  const pa  = STATE.recipientUpi;
+  if (!pa || pa === 'yourname@okaxis') {
+    showToast('Set your UPI ID in Settings first', 'red');
+    return;
+  }
   const pn  = encodeURIComponent(STATE.recipientName);
+  const paE = encodeURIComponent(pa);
   const tn  = encodeURIComponent('VaultHabit Weekly Deposit');
 
-  // Android intent — opens GPay directly
-  const intent = `intent://pay?pa=${pa}&pn=${pn}&am=${amt}&cu=INR&tn=${tn}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=upi%3A%2F%2Fpay%3Fpa%3D${pa}%26pn%3D${pn}%26am%3D${amt}%26cu%3DINR;end`;
+  // Mark as paid locally
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('en-IN', { day:'numeric', month:'short' }) + ' · via UPI';
+  Store.set('vh_paid_this_week', dateStr);
+  const statusPill = document.getElementById('deposit-status-pill');
+  const dateLbl = document.getElementById('deposit-date-label');
+  if (statusPill) { statusPill.className = 'status-pill paid'; statusPill.textContent = '✓ Paid'; }
+  if (dateLbl) dateLbl.textContent = dateStr;
 
-  // Generic UPI fallback (opens whichever UPI app is default)
-  const upi = `upi://pay?pa=${pa}&pn=${pn}&am=${amt}&cu=INR&tn=${tn}`;
+  showToast('Opening UPI payment…', '');
 
-  showToast('Opening GPay / UPI…', '');
+  // Use standard upi:// scheme — works with GPay, PhonePe, Paytm, BHIM, all UPI apps
+  // The am field must be a plain number string, no commas
+  const upi = 'upi://pay?pa=' + paE + '&pn=' + pn + '&am=' + amt + '&cu=INR&tn=' + tn;
 
-  // Try Android intent first, then generic UPI
+  // On Android, use an <a> click to trigger the UPI chooser properly
   const a = document.createElement('a');
-  a.href = intent;
+  a.href = upi;
+  a.style.display = 'none';
+  document.body.appendChild(a);
   a.click();
-
-  // Fallback after 1.5s if nothing opened
-  setTimeout(() => { window.location.href = upi; }, 1500);
+  document.body.removeChild(a);
 }
 
 // ── WITHDRAW REQUEST ──
@@ -769,6 +625,9 @@ function saveUpiId() {
   }
   STATE.upiId = val;
   Store.set('vh_upi', val);
+  // Also store as recipient if not set separately
+  if (!Store.get('vh_recipient_upi', '')) Store.set('vh_recipient_upi', val);
+  STATE.recipientUpi = STATE.recipientUpi || val;
   const display = document.getElementById('upi-id-display');
   if (display) display.textContent = val;
   closeModal('upi-modal');
@@ -809,6 +668,7 @@ function addHabit() {
   closeModal('add-habit-modal');
   showToast('✓ ' + val + ' added!', 'green');
   updateRing();
+  syncDashboard();
 }
 
 function saveDeposit() {
@@ -821,6 +681,7 @@ function saveDeposit() {
   if (display) display.textContent = amount.toLocaleString('en-IN');
   closeModal('deposit-modal');
   showToast('✓ Next week set to ₹' + amount.toLocaleString('en-IN'), 'green');
+  syncDashboard();
 }
 
 // ── TOAST ──
@@ -835,13 +696,114 @@ function showToast(msg, type) {
   toastTimer = setTimeout(function() { t.className = 'toast'; }, 2800);
 }
 
+// ── WEEK HELPERS ──
+function getWeekLabel() {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0=Sun
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7));
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+  return fmt(monday) + ' – ' + fmt(sunday);
+}
+function getDaysLeft() {
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const daysLeft = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+  return daysLeft;
+}
+
+// ── SYNC DASHBOARD ──
+function syncDashboard() {
+  const list = document.getElementById('habits-full-list');
+  const cards = list ? list.querySelectorAll('.habit-card') : [];
+  const done  = list ? list.querySelectorAll('.habit-card.done').length : 0;
+  const total = cards.length;
+  const pct   = total ? Math.round(done / total * 100) : 0;
+
+  // Deposit tab breakdown
+  const dep = STATE.depositAmount;
+  const vCount = STATE.violations ? STATE.violations.length : 0;
+  const vPenalty = vCount * STATE.penaltyPerViolation;
+  const missedHabits = total - done;
+  const habitPenalty = missedHabits * STATE.penaltyPerMiss;
+  const payout = Math.max(0, dep - vPenalty - habitPenalty);
+
+  const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
+  set('stat-deposited', dep ? '₹' + dep.toLocaleString('en-IN') : '₹0');
+  set('stat-penalties', '–₹' + (vPenalty + habitPenalty).toLocaleString('en-IN'));
+  set('stat-habits', done + '/' + total);
+  set('stat-violations', vCount + '×');
+  set('balance-num', payout.toLocaleString('en-IN'));
+
+  set('home-progress-text', total ? done + ' of ' + total + ' tasks done' : 'No habits yet');
+  set('home-progress-pct', pct + '%');
+  const hBar = document.getElementById('home-progress-bar');
+  if (hBar) hBar.style.width = pct + '%';
+
+  set('habits-progress-text', done + ' of ' + total + ' completed');
+  const hpBar = document.getElementById('habits-progress-bar');
+  if (hpBar) hpBar.style.width = pct + '%';
+
+  // Week label
+  const wLabel = getWeekLabel();
+  const dLeft  = getDaysLeft();
+  set('week-greeting', wLabel);
+  set('days-left-badge', 'Active — ' + dLeft + ' day' + (dLeft !== 1 ? 's' : '') + ' left');
+  set('deposit-week-greeting', 'This Week');
+
+  // Deposit breakdown
+  set('breakdown-deposit', dep ? '+ ₹' + dep.toLocaleString('en-IN') : '+ ₹0');
+  set('breakdown-violations', '– ₹' + vPenalty.toLocaleString('en-IN'));
+  const vlLabel = document.getElementById('breakdown-violations-label');
+  if (vlLabel) vlLabel.textContent = 'Site violations (' + vCount + '×)';
+  set('breakdown-habits', '– ₹' + habitPenalty.toLocaleString('en-IN'));
+  set('breakdown-payout', '₹' + payout.toLocaleString('en-IN'));
+  set('withdraw-display', '₹' + payout.toLocaleString('en-IN'));
+  set('total-penalties-display', (vPenalty + habitPenalty).toLocaleString('en-IN'));
+
+  STATE.withdrawAmt = payout;
+
+  // Home habit preview — show up to 3 habits
+  const preview = document.getElementById('home-habits-preview');
+  if (preview && cards.length > 0) {
+    preview.innerHTML = '';
+    Array.from(cards).slice(0, 3).forEach(card => {
+      const clone = card.cloneNode(true);
+      clone.setAttribute('onclick', 'toggleHabit(this)');
+      preview.appendChild(clone);
+    });
+  } else if (preview && cards.length === 0) {
+    preview.innerHTML = '<div class="empty-state"><div class="empty-icon">🌱</div>No habits yet — add one in the Habits tab</div>';
+  }
+}
+
 // ── INIT ──
 document.addEventListener('DOMContentLoaded', function() {
+  STATE.violations = [];
+  STATE.penaltyPerViolation = parseInt(Store.get('vh_penalty_vio', '50'));
+  STATE.penaltyPerMiss = parseInt(Store.get('vh_penalty_miss', '50'));
+  STATE.depositAmount = parseInt(Store.get('vh_deposit', '500'));
+  STATE.recipientUpi = Store.get('vh_recipient_upi', '');
+
   updateRing();
+
   const upiDisplay = document.getElementById('upi-id-display');
   if (upiDisplay) upiDisplay.textContent = STATE.upiId || 'Tap Edit to set your UPI ID';
   const depDisplay = document.getElementById('deposit-display-amt');
   if (depDisplay) depDisplay.textContent = STATE.depositAmount.toLocaleString('en-IN');
+
+  // Deposit status
+  const paid = Store.get('vh_paid_this_week', '');
+  const statusPill = document.getElementById('deposit-status-pill');
+  const dateLbl    = document.getElementById('deposit-date-label');
+  if (paid) {
+    if (statusPill) { statusPill.className = 'status-pill paid'; statusPill.textContent = '✓ Paid'; }
+    if (dateLbl)   dateLbl.textContent = paid;
+  }
+
+  syncDashboard();
 });
 </script>
 <script>
