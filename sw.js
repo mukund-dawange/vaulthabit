@@ -1,5 +1,5 @@
 // VaultHabit Service Worker — Offline Support
-const CACHE = 'vaulthabit-v1';
+const CACHE = 'vaulthabit-v2';
 const ASSETS = [
   '/',
   '/index.html',
