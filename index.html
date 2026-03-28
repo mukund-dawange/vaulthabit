@@ -385,7 +385,7 @@
         <span style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;">Your UPI ID</span>
         <div style="display:flex;align-items:center;gap:10px;width:100%;margin-top:4px;">
           <span id="upi-id-display" style="font-size:14px;font-weight:500;flex:1;">yourname@okicici</span>
-          <button onclick="editUpiId()" style="border:1px solid var(--border);background:none;color:var(--gold);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;">Edit</button>
+          <button onclick="openUpiModal()" style="border:1px solid var(--border);background:none;color:var(--gold);border-radius:8px;padding:5px 12px;font-size:12px;cursor:pointer;">Edit</button>
         </div>
         <span style="font-size:11px;color:var(--muted);margin-top:2px;">Used to receive your withdrawal payout</span>
       </div>
@@ -643,154 +643,206 @@
   </div>
 </div>
 
+<!-- ══ UPI ID MODAL ══ -->
+<div class="modal-overlay" id="upi-modal" onclick="closeModal('upi-modal')">
+  <div class="modal-sheet" onclick="event.stopPropagation()">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Your UPI ID</div>
+    <div class="modal-sub">This is where your withdrawal payout will be sent every Sunday.</div>
+    <div class="input-group">
+      <label class="input-label">UPI ID</label>
+      <input type="text" class="input-field" id="upi-input" placeholder="yourname@okicici" autocomplete="off" autocorrect="off" autocapitalize="none"/>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">Examples: name@okicici · 9876543210@ybl · name@paytm</div>
+    <button class="btn-primary" onclick="saveUpiId()">Save UPI ID</button>
+    <button class="btn-secondary" onclick="closeModal('upi-modal')" style="margin-top:10px;">Cancel</button>
+  </div>
+</div>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
+// ─── SAFE STORAGE (works even if localStorage is blocked in PWA mode) ───
+const Store = {
+  data: {},
+  get(k, def) { try { return localStorage.getItem(k) || def; } catch(e) { return this.data[k] || def; } },
+  set(k, v)   { try { localStorage.setItem(k, v); } catch(e) { this.data[k] = v; } }
+};
+
 // ─── APP STATE ───
 const STATE = {
-  depositAmount: parseInt(localStorage.getItem('vh_deposit') || '1500'),
-  upiId: localStorage.getItem('vh_upi') || 'yourname@okicici',
-  mukunddawange91-1@oksbi',   // ← PUT YOUR OWN UPI ID HERE (where deposit money goes)
+  depositAmount: parseInt(Store.get('vh_deposit', '1500')),
+  upiId:         Store.get('vh_upi', ''),
+  recipientUpi:  'mukunddawange91-1@oksbi',   // ← YOUR UPI ID — change this before uploading
   recipientName: 'VaultHabit',
+  withdrawAmt:   1250,
 };
 
 // ── NAVIGATION ──
 function switchTab(tab) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('sec-' + tab).classList.add('active');
-  document.getElementById('nav-' + tab).classList.add('active');
-  document.getElementById('page-wrap').scrollTop = 0;
+  const sec = document.getElementById('sec-' + tab);
+  const btn = document.getElementById('nav-' + tab);
+  if (sec) sec.classList.add('active');
+  if (btn) btn.classList.add('active');
+  const wrap = document.getElementById('page-wrap');
+  if (wrap) wrap.scrollTop = 0;
 }
 
 // ── HABIT TOGGLE ──
 function toggleHabit(card) {
   card.classList.toggle('done');
-  const name = card.querySelector('.habit-name').textContent;
+  const nameEl = card.querySelector('.habit-name');
+  const name = nameEl ? nameEl.textContent : 'Habit';
   const isDone = card.classList.contains('done');
-  showToast(isDone ? '✓ ' + name + ' marked done' : name + ' unchecked', isDone ? 'green' : '');
+  showToast((isDone ? '✓ ' : '✗ ') + name + (isDone ? ' done!' : ' unchecked'), isDone ? 'green' : '');
   updateRing();
 }
 
 function updateRing() {
   const cards = document.querySelectorAll('#sec-habits .habit-card');
-  const done = document.querySelectorAll('#sec-habits .habit-card.done').length;
-  const pct = Math.round(done / cards.length * 100);
-  const circ = 188.5;
+  const done  = document.querySelectorAll('#sec-habits .habit-card.done').length;
+  if (!cards.length) return;
+  const pct    = Math.round(done / cards.length * 100);
+  const circ   = 188.5;
   const offset = circ - (circ * pct / 100);
-  document.getElementById('habit-ring').style.strokeDashoffset = offset;
-  document.getElementById('ring-pct').textContent = pct + '%';
+  const ring   = document.getElementById('habit-ring');
+  const label  = document.getElementById('ring-pct');
+  if (ring)  ring.style.strokeDashoffset = offset;
+  if (label) label.textContent = pct + '%';
 }
 
 // ── GPay / UPI PAYMENT ──
-// Opens the user's default UPI app (GPay, PhonePe, Paytm etc.)
 function openGPay() {
-  const amount = STATE.depositAmount;
-  const upiUrl = `upi://pay?pa=${encodeURIComponent(STATE.recipientUpi)}&pn=${encodeURIComponent(STATE.recipientName)}&am=${amount}&cu=INR&tn=${encodeURIComponent('VaultHabit Weekly Deposit')}`;
+  const amt = STATE.depositAmount;
+  const pa  = encodeURIComponent(STATE.recipientUpi);
+  const pn  = encodeURIComponent(STATE.recipientName);
+  const tn  = encodeURIComponent('VaultHabit Weekly Deposit');
 
-  // Try to open UPI deep link
-  const start = Date.now();
-  window.location.href = upiUrl;
+  // Android intent — opens GPay directly
+  const intent = `intent://pay?pa=${pa}&pn=${pn}&am=${amt}&cu=INR&tn=${tn}#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=upi%3A%2F%2Fpay%3Fpa%3D${pa}%26pn%3D${pn}%26am%3D${amt}%26cu%3DINR;end`;
 
-  // After 1.5s, if still on page, app wasn't found — show fallback
-  setTimeout(() => {
-    if (Date.now() - start < 2000) {
-      openGPayFallback(amount);
-    }
-  }, 1500);
+  // Generic UPI fallback (opens whichever UPI app is default)
+  const upi = `upi://pay?pa=${pa}&pn=${pn}&am=${amt}&cu=INR&tn=${tn}`;
 
-  showToast('Opening UPI app…', '');
-}
+  showToast('Opening GPay / UPI…', '');
 
-function openGPayFallback(amount) {
-  // GPay intent URL as fallback (works on Android)
-  const gpayUrl = `intent://pay?pa=${encodeURIComponent(STATE.recipientUpi)}&pn=${encodeURIComponent(STATE.recipientName)}&am=${amount}&cu=INR&tn=VaultHabit+Deposit#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;end`;
-  window.location.href = gpayUrl;
+  // Try Android intent first, then generic UPI
+  const a = document.createElement('a');
+  a.href = intent;
+  a.click();
+
+  // Fallback after 1.5s if nothing opened
+  setTimeout(() => { window.location.href = upi; }, 1500);
 }
 
 // ── WITHDRAW REQUEST ──
 function requestWithdraw() {
   const upiId = STATE.upiId;
-  if (!upiId || upiId === 'yourname@okicici') {
-    showToast('⚠ Please set your UPI ID first', 'red');
-    editUpiId();
+  if (!upiId) {
+    showToast('Set your UPI ID first', 'red');
+    openUpiModal();
     return;
   }
-  // Log the request (in a real app this would hit your backend)
-  showToast('✓ Withdrawal of ₹1,250 requested to ' + upiId, 'green');
-  // In production: send to your server — server then uses Razorpay Payout API or manual transfer
+  showToast('✓ Withdrawal of ₹' + STATE.withdrawAmt + ' requested!', 'green');
 }
 
-// ── UPI ID EDITOR ──
-function editUpiId() {
-  const current = STATE.upiId;
-  const newId = prompt('Enter your UPI ID (e.g. yourname@okicici):', current);
-  if (newId && newId.trim()) {
-    STATE.upiId = newId.trim();
-    localStorage.setItem('vh_upi', STATE.upiId);
-    document.getElementById('upi-id-display').textContent = STATE.upiId;
-    showToast('✓ UPI ID saved', 'green');
+// ── UPI ID MODAL (replaces prompt() which doesn't work in PWAs) ──
+function openUpiModal() {
+  const el = document.getElementById('upi-modal');
+  if (el) {
+    const inp = document.getElementById('upi-input');
+    if (inp) inp.value = STATE.upiId;
+    el.classList.add('open');
+    setTimeout(() => { if (inp) inp.focus(); }, 300);
   }
+}
+
+function saveUpiId() {
+  const inp = document.getElementById('upi-input');
+  const val = inp ? inp.value.trim() : '';
+  if (!val || !val.includes('@')) {
+    showToast('Enter a valid UPI ID (e.g. name@okicici)', 'red');
+    return;
+  }
+  STATE.upiId = val;
+  Store.set('vh_upi', val);
+  const display = document.getElementById('upi-id-display');
+  if (display) display.textContent = val;
+  closeModal('upi-modal');
+  showToast('✓ UPI ID saved', 'green');
 }
 
 // ── MODALS ──
 function openAddHabit() {
   document.getElementById('add-habit-modal').classList.add('open');
-  setTimeout(() => document.getElementById('habit-input').focus(), 300);
+  setTimeout(() => {
+    const inp = document.getElementById('habit-input');
+    if (inp) inp.focus();
+  }, 300);
 }
 function openChangeDeposit() {
   document.getElementById('deposit-modal').classList.add('open');
 }
 function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
+  const el = document.getElementById(id);
+  if (el) el.classList.remove('open');
 }
 
 function addHabit() {
-  const val = document.getElementById('habit-input').value.trim();
-  if (!val) return;
+  const inp = document.getElementById('habit-input');
+  const val = inp ? inp.value.trim() : '';
+  if (!val) { showToast('Enter a habit name', 'red'); return; }
   const list = document.getElementById('habits-full-list');
+  if (!list) return;
   const card = document.createElement('div');
   card.className = 'habit-card';
-  card.onclick = function(){ toggleHabit(this); };
-  card.innerHTML = `
-    <div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
-    <div class="habit-info">
-      <div class="habit-name">${val}</div>
-      <div class="habit-meta">Daily</div>
-    </div>
-    <span class="habit-streak">New</span>`;
+  card.setAttribute('onclick', 'toggleHabit(this)');
+  card.innerHTML =
+    '<div class="habit-check"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>' +
+    '<div class="habit-info"><div class="habit-name">' + val + '</div><div class="habit-meta">Daily</div></div>' +
+    '<span class="habit-streak">New</span>';
   list.appendChild(card);
-  document.getElementById('habit-input').value = '';
+  inp.value = '';
   closeModal('add-habit-modal');
-  showToast('✓ Habit added!', 'green');
+  showToast('✓ ' + val + ' added!', 'green');
   updateRing();
 }
 
 function saveDeposit() {
-  const amount = parseInt(document.getElementById('deposit-input').value);
-  if (!amount || amount < 100) { showToast('Minimum ₹100', 'red'); return; }
+  const inp = document.getElementById('deposit-input');
+  const amount = parseInt(inp ? inp.value : '0');
+  if (!amount || amount < 100) { showToast('Minimum amount is ₹100', 'red'); return; }
   STATE.depositAmount = amount;
-  localStorage.setItem('vh_deposit', amount);
-  document.getElementById('deposit-display-amt').textContent = amount.toLocaleString('en-IN');
+  Store.set('vh_deposit', amount);
+  const display = document.getElementById('deposit-display-amt');
+  if (display) display.textContent = amount.toLocaleString('en-IN');
   closeModal('deposit-modal');
-  showToast('✓ Next week set to ₹' + amount, 'green');
+  showToast('✓ Next week set to ₹' + amount.toLocaleString('en-IN'), 'green');
 }
 
 // ── TOAST ──
 let toastTimer;
-function showToast(msg, type = '') {
+function showToast(msg, type) {
+  type = type || '';
   const t = document.getElementById('toast');
+  if (!t) return;
   t.textContent = msg;
-  t.className = 'toast show ' + type;
+  t.className = 'toast show' + (type ? ' ' + type : '');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.className = 'toast', 2600);
+  toastTimer = setTimeout(function() { t.className = 'toast'; }, 2800);
 }
 
 // ── INIT ──
-updateRing();
-document.getElementById('upi-id-display').textContent = STATE.upiId;
-document.getElementById('deposit-display-amt').textContent = STATE.depositAmount.toLocaleString('en-IN');
+document.addEventListener('DOMContentLoaded', function() {
+  updateRing();
+  const upiDisplay = document.getElementById('upi-id-display');
+  if (upiDisplay) upiDisplay.textContent = STATE.upiId || 'Tap Edit to set your UPI ID';
+  const depDisplay = document.getElementById('deposit-display-amt');
+  if (depDisplay) depDisplay.textContent = STATE.depositAmount.toLocaleString('en-IN');
+});
 </script>
 <script>
   if ('serviceWorker' in navigator) {
